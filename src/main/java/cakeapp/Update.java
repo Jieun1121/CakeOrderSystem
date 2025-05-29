@@ -38,7 +38,7 @@ public class Update {
 
         String sql = "UPDATE Orders SET status = ? WHERE order_id = ?";
         try {
-            conn.setAutoCommit(false); // 트랜잭션 시작
+            conn.setAutoCommit(false); 
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, newStatus);
@@ -53,17 +53,17 @@ public class Update {
                 }
             }
 
-            conn.commit(); // 커밋
+            conn.commit(); 
         } catch (SQLException e) {
             try {
-                conn.rollback(); // 롤백
+                conn.rollback(); 
                 System.out.println("트랜잭션 롤백됨: " + e.getMessage());
             } catch (SQLException rollbackEx) {
                 System.out.println("롤백 중 오류 발생: " + rollbackEx.getMessage());
             }
         } finally {
             try {
-                conn.setAutoCommit(true); // 원상 복구
+                conn.setAutoCommit(true); 
             } catch (SQLException e) {
                 System.out.println("autoCommit 복원 실패: " + e.getMessage());
             }
@@ -99,7 +99,7 @@ public class Update {
 
         String sql = "UPDATE Customer SET address = ? WHERE customer_id = ?";
         try {
-            conn.setAutoCommit(false); // 트랜잭션 시작
+            conn.setAutoCommit(false); 
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, newAddress);

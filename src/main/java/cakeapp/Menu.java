@@ -211,10 +211,10 @@ public void updateRun() {
 			try (Connection conn = DatabaseUtil.getConnection()) { // DB 연결
         switch (choice) {
             case 1:
-                update.updateOrderState(conn); // ✔ 연결 전달
+                update.updateOrderState(conn); 
                 break;
             case 2:
-                update.updateCustomerAddress(conn); // ✔ 연결 전달
+                update.updateCustomerAddress(conn); 
                 break;
             case 3:
                 System.out.println("메인 화면으로 돌아갑니다.");
@@ -228,8 +228,8 @@ public void updateRun() {
 	//delete
 	void deleteMenuPrint() {
 		System.out.println("--- Delete Menu ---");
-		System.out.println("1. 고객 회원 탈퇴"); //DELETE MENU 1: 고객 회원 탈퇴
-		System.out.println("2. 취소된 주문 삭제"); //DELETE MENU 2: 취소된 주문 내역 삭제
+		System.out.println("1. 고객 회원 탈퇴"); 
+		System.out.println("2. 취소된 주문 삭제");
 		System.out.println("3. -뒤로가기");
 		System.out.print("메뉴 입력 : ");		
 	}
@@ -244,7 +244,7 @@ public void updateRun() {
 				
 				if (d_menu < 1 || d_menu > 3) {
 					System.out.println("범위에 맞는 숫자를 입력하세요.");
-	                continue; // 다시 입력 받기
+	                continue; 
 	            }
 				
 				return d_menu;
@@ -259,13 +259,13 @@ public void deleteRun() {
 			int choice = getDeleteMenu();
 			Delete delete = new Delete();
 			
-			try (Connection conn = DatabaseUtil.getConnection()) { // DB 연결
+			try (Connection conn = DatabaseUtil.getConnection()) { 
         switch (choice) {
             case 1:
-                delete.deleteCustomer(conn); // ✔ 연결 전달
+                delete.deleteCustomer(conn); 
                 break;
             case 2:
-                delete.deleteCancelledOrder(conn); // ✔ 연결 전달
+                delete.deleteCancelledOrder(conn); 
                 break;
             case 3:
                 System.out.println("메인 화면으로 돌아갑니다.");
