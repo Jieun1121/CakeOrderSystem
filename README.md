@@ -6,9 +6,10 @@
 
 ## DB 초기 설정 방법
 1. MySQL 설치 및 실행 
-  * 포트번호 3306(MYSQL 기본 포트) 설정하거나, DatabaseUtil에서 URL을
-    자신의 포트번호로로 수정하기
+  * 포트번호를 설정할 때 3306(MYSQL 기본 포트)로 설정하거나,
+    다른 번호로 설정했다면 DatabaseUtil에서 URL의 3306을 본인이 설정한 포트번호로 수정
 2. 데이터베이스 및 테이블 생성(아래 sql 복사 붙여넣기)
+3. DatabaseUtil.java의 PASSWORD에 본인이 설정한 비밀번호 입력(각주 참조)
 
 ## sql
 sql
