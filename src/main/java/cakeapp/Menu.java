@@ -1,5 +1,7 @@
 package cakeapp;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 public class Menu {
@@ -144,6 +146,7 @@ public void insertRun() {
 			}
 		}	
 	}
+
 	
 public void selectRun() {	
 			int choice = getSelectMenu();
@@ -205,19 +208,22 @@ public void selectRun() {
 public void updateRun() {		
 			int choice = getUpdateMenu();
 			Update update = new Update();
-			
-			switch(choice) {
-			case 1: //UPDATE MENU 1: 주문 상태 변경
-				update.updateOrderState();
-				break;	
-			case 2: //UPDATE MENU 2: 고객 주소 변경
-				update.updateCustomerAddress();
-				break;				
-			case 3: 
-				System.out.println("메인 화면으로 돌아갑니다.");
-				break;
-			}
-	}
+			try (Connection conn = DatabaseUtil.getConnection()) { // DB 연결
+        switch (choice) {
+            case 1:
+                update.updateOrderState(conn); // ✔ 연결 전달
+                break;
+            case 2:
+                update.updateCustomerAddress(conn); // ✔ 연결 전달
+                break;
+            case 3:
+                System.out.println("메인 화면으로 돌아갑니다.");
+                break;
+        }
+    } catch (SQLException e) {
+        System.out.println("DB 연결 실패: " + e.getMessage())
+;	}
+    }
 	
 	//delete
 	void deleteMenuPrint() {
@@ -253,16 +259,20 @@ public void deleteRun() {
 			int choice = getDeleteMenu();
 			Delete delete = new Delete();
 			
-			switch(choice) {
-			case 1: //DELETE MENU 1: 고객 회원 탈퇴 
-				delete.deleteCustomer();		
-				break;	
-			case 2: //DELETE MENU 2: 취소된 주문 내역 삭제
-				delete.deleteCancledOrder();	
-				break;
-			case 3:
-				System.out.println("메인 화면으로 돌아갑니다.");
-				break;
-			}		
-	}	
+			try (Connection conn = DatabaseUtil.getConnection()) { // DB 연결
+        switch (choice) {
+            case 1:
+                delete.deleteCustomer(conn); // ✔ 연결 전달
+                break;
+            case 2:
+                delete.deleteCancelledOrder(conn); // ✔ 연결 전달
+                break;
+            case 3:
+                System.out.println("메인 화면으로 돌아갑니다.");
+                break;
+        }
+    } catch (SQLException e) {
+        System.out.println("DB 연결 실패: " + e.getMessage());
+    }
+}
 }
