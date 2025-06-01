@@ -36,7 +36,7 @@ public class Update {
             }
         }
 
-        String sql = "UPDATE Orders SET status = ? WHERE order_id = ?";
+        String sql = "UPDATE CakeOrder SET status = ? WHERE order_id = ?";
         try {
             conn.setAutoCommit(false); 
 

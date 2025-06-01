@@ -4,20 +4,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
+import java.sql.Date;
 
 public class Insert {
     Scanner sc = new Scanner(System.in);
 
-    // insert 1: 케이크 주문 추가
+    // INSERT MENU 1: 케이크 주문 추가
     public void insertCakeOrder() {
-        String cakeName;
         String customizingOptionId = ""; // 최종 선택된 option_id 저장
         String customizingDetail = ""; // 화면에 보여줄 option_detail 저장
 
@@ -155,33 +156,61 @@ public class Insert {
         }
     }
 
-    // 결제 방법 추가
+    // INSERT MENU 2: 결제 방법 추가가
     public void insertPayment() {
-        String payment;
+        Scanner sc = new Scanner(System.in);
+        String[] paymentOptions = { "card", "cash" };
+        int choice = -1;
 
         System.out.println("=== 케이크 주문 결제 ===");
+
+        // 결제 방식 선택
         while (true) {
+            System.out.println("결제 방식을 선택하세요:");
+            for (int i = 0; i < paymentOptions.length; i++) {
+                System.out.println((i + 1) + ". " + paymentOptions[i]);
+            }
+
+            System.out.print("번호 입력 (1~" + paymentOptions.length + "): ");
+            String input = sc.nextLine();
+
             try {
-                System.out.print("원하시는 결제 방식을 입력하세요: ");
-                payment = sc.nextLine();
-                if (payment.trim().isEmpty()) {
-                    System.out.println("잘못된 입력입니다. 다시 입력하세요.");
-                    continue;
+                choice = Integer.parseInt(input);
+                if (choice >= 1 && choice <= paymentOptions.length) {
+                    break;
+                } else {
+                    System.out.println("유효한 번호를 입력하세요.");
                 }
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("문자열을 입력하세요");
-                sc.nextLine();
+            } catch (NumberFormatException e) {
+                System.out.println("숫자만 입력하세요.");
             }
         }
 
+        String selectedPayment = paymentOptions[choice - 1];
+
+        // 필요한 추가 정보 입력 받기
+        System.out.print("주문 ID를 입력하세요 (예: OR024): ");
+        String orderId = sc.nextLine();
+
+        System.out.print("결제 금액을 입력하세요: ");
+        int amountPaid = Integer.parseInt(sc.nextLine());
+
+        String paymentId = generatePaymentId(); // 간단한 ID 생성 예시
+        LocalDate today = LocalDate.now();
+
+        // DB 삽입
         try (Connection conn = DatabaseUtil.getConnection()) {
-            String sql = "INSERT INTO payments (payment_method) VALUES (?)";
+            String sql = "INSERT INTO Payment (payment_id, order_id, payment_method, payment_date, amount_paid) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, payment);
+            pstmt.setString(1, paymentId);
+            pstmt.setString(2, orderId);
+            pstmt.setString(3, selectedPayment);
+            pstmt.setDate(4, Date.valueOf(today));
+            pstmt.setInt(5, amountPaid);
+
             int result = pstmt.executeUpdate();
             if (result > 0) {
-                System.out.println(payment + "으로 결제되었습니다.");
+                System.out.println("결제가 완료되었습니다. (결제 수단: " + selectedPayment + ")");
             } else {
                 System.out.println("결제 등록에 실패했습니다.");
             }
@@ -190,69 +219,72 @@ public class Insert {
         }
     }
 
-    // insert 2: 신규 회원 등록
+    // 간단한 결제 ID 생성 예시
+    private String generatePaymentId() {
+        return "PM" + String.format("%03d", new Random().nextInt(900) + 100);
+    }
+
+    // INSERT MENU 3: 신규 회원 등록
     public void insertCustomer() {
         String customerName;
         String customerPhoneNumber;
         String customerAddress;
 
-        System.out.println("=== 신규 회원 등록 ===");
-
+        // 사용자 입력
         while (true) {
-            try {
-                System.out.print("이름을 입력하세요: ");
-                customerName = sc.nextLine();
-                if (customerName.trim().isEmpty()) {
-                    System.out.println("잘못된 입력입니다. 다시 입력하세요.");
-                    continue;
-                }
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("문자열을 입력하세요");
-                sc.nextLine();
+            System.out.print("이름을 입력하세요: ");
+            customerName = sc.nextLine();
+            if (customerName.trim().isEmpty()) {
+                System.out.println("잘못된 입력입니다. 다시 입력하세요.");
+                continue;
             }
+            break;
         }
 
         while (true) {
-            try {
-                System.out.print("전화번호를 입력하세요: ");
-                customerPhoneNumber = sc.nextLine();
-                if (customerPhoneNumber.trim().isEmpty()) {
-                    System.out.println("잘못된 입력입니다. 다시 입력하세요.");
-                    continue;
-                }
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("문자열을 입력하세요");
-                sc.nextLine();
+            System.out.print("전화번호를 입력하세요: ");
+            customerPhoneNumber = sc.nextLine();
+            if (customerPhoneNumber.trim().isEmpty()) {
+                System.out.println("잘못된 입력입니다. 다시 입력하세요.");
+                continue;
             }
+            break;
         }
 
         while (true) {
-            try {
-                System.out.print("주소를 입력하세요: ");
-                customerAddress = sc.nextLine();
-                if (customerAddress.trim().isEmpty()) {
-                    System.out.println("잘못된 입력입니다. 다시 입력하세요.");
-                    continue;
-                }
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("문자열을 입력하세요");
-                sc.nextLine();
+            System.out.print("주소를 입력하세요: ");
+            customerAddress = sc.nextLine();
+            if (customerAddress.trim().isEmpty()) {
+                System.out.println("잘못된 입력입니다. 다시 입력하세요.");
+                continue;
             }
+            break;
         }
 
         try (Connection conn = DatabaseUtil.getConnection()) {
-            String sql = "INSERT INTO customers (name, phone_number, address) VALUES (?, ?, ?)";
+            // 가장 큰 customer_id 조회 (예: CU010 → CU011)
+            String getMaxIdSql = "SELECT MAX(customer_id) FROM customer";
+            PreparedStatement maxStmt = conn.prepareStatement(getMaxIdSql);
+            ResultSet rs = maxStmt.executeQuery();
+
+            String newCustomerId = "CU001"; // 기본값
+            if (rs.next() && rs.getString(1) != null) {
+                String maxId = rs.getString(1); // "CU010"
+                int idNum = Integer.parseInt(maxId.substring(2)) + 1;
+                newCustomerId = String.format("CU%03d", idNum); // "CU011"
+            }
+
+            // INSERT 실행
+            String sql = "INSERT INTO customer (customer_id, name, phone_number, address) VALUES (?, ?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, customerName);
-            pstmt.setString(2, customerPhoneNumber);
-            pstmt.setString(3, customerAddress);
+            pstmt.setString(1, newCustomerId);
+            pstmt.setString(2, customerName);
+            pstmt.setString(3, customerPhoneNumber);
+            pstmt.setString(4, customerAddress);
+
             int result = pstmt.executeUpdate();
             if (result > 0) {
-                System.out.println(
-                        customerName + ", " + customerPhoneNumber + ", " + customerAddress + " 회원 추가 완료되었습니다.");
+                System.out.println("신규 회원 등록 성공: " + newCustomerId + " / " + customerName);
             } else {
                 System.out.println("회원 추가에 실패했습니다.");
             }
@@ -260,4 +292,5 @@ public class Insert {
             System.out.println("DB 오류: " + e.getMessage());
         }
     }
+
 }

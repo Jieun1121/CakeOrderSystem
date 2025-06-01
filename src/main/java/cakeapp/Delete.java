@@ -49,7 +49,7 @@ public class Delete {
             if (confirm.isEmpty()) {
                 System.out.println("입력이 비어 있습니다. 다시 입력하세요.");
             } else if (confirm.equals("Y")) {
-                String sql = "DELETE FROM Orders WHERE status = 'cancelled'";
+                String sql = "DELETE FROM CakeOrder WHERE status = 'cancelled'";
                 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     int result = pstmt.executeUpdate();
                     System.out.println(result + "개의 'cancelled' 주문이 삭제되었습니다.");
