@@ -125,12 +125,26 @@ public class Insert {
         }
 
         // 6) 최종 주문 정보 DB 저장
-        String insertSql = "INSERT INTO CakeOrder (order_id, option_id) VALUES (?, ?)";
+        String insertSql = "INSERT INTO CakeOrder (order_id, customer_id, cake_id, option_id, order_date, total_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseUtil.getConnection();
                 PreparedStatement psIns = conn.prepareStatement(insertSql)) {
 
-            psIns.setString(1, cakeId);
-            psIns.setString(2, customizingOptionId.isEmpty() ? null : customizingOptionId);
+            String orderId = "OD" + System.currentTimeMillis(); // 예시: 고유 주문 ID
+            String customerId = "CU001"; // TODO: 실제 로그인한 사용자 ID로 교체
+            LocalDate orderDate = LocalDate.now(); // 현재 날짜
+            int cakePrice = 20000; // TODO: 케이크 가격 DB에서 조회해서 사용
+            int optionPrice = customizingOptionId.isEmpty() ? 0 : 3000; // 예시 옵션 가격
+            int totalAmount = cakePrice + optionPrice;
+            String status = "pending"; // 기본 상태
+
+            psIns.setString(1, orderId);
+            psIns.setString(2, customerId);
+            psIns.setString(3, cakeId);
+            psIns.setString(4, customizingOptionId.isEmpty() ? null : customizingOptionId);
+            psIns.setDate(5, java.sql.Date.valueOf(orderDate));
+            psIns.setInt(6, totalAmount);
+            psIns.setString(7, status);
+
             int result = psIns.executeUpdate();
             if (result > 0) {
                 System.out.println(cakeNameSelected + " - " +
@@ -195,11 +209,23 @@ public class Insert {
         System.out.print("결제 금액을 입력하세요: ");
         int amountPaid = Integer.parseInt(sc.nextLine());
 
-        String paymentId = generatePaymentId(); // 간단한 ID 생성 예시
         LocalDate today = LocalDate.now();
 
         // DB 삽입
         try (Connection conn = DatabaseUtil.getConnection()) {
+            // payment_id 생성
+            String getMaxIdSql = "SELECT MAX(payment_id) FROM Payment";
+            PreparedStatement maxStmt = conn.prepareStatement(getMaxIdSql);
+            ResultSet rs = maxStmt.executeQuery();
+
+            String paymentId = "PM001"; // 기본값
+            if (rs.next() && rs.getString(1) != null) {
+                String maxId = rs.getString(1); // 예: "PM012"
+                int idNum = Integer.parseInt(maxId.substring(2)) + 1;
+                paymentId = String.format("PM%03d", idNum); // 예: "PM013"
+            }
+
+            // INSERT 실행
             String sql = "INSERT INTO Payment (payment_id, order_id, payment_method, payment_date, amount_paid) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, paymentId);
@@ -218,12 +244,7 @@ public class Insert {
             System.out.println("DB 오류: " + e.getMessage());
         }
     }
-
-    // 간단한 결제 ID 생성 예시
-    private String generatePaymentId() {
-        return "PM" + String.format("%03d", new Random().nextInt(900) + 100);
-    }
-
+    
     // INSERT MENU 3: 신규 회원 등록
     public void insertCustomer() {
         String customerName;

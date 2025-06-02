@@ -11,6 +11,7 @@ public class Update {
     // UPDATE MENU 1: 주문 상태 변경
     public void updateOrderState(Connection conn) {
         String orderId;
+
         String newStatus;
 
         while (true) {
