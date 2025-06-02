@@ -205,6 +205,8 @@ INSERT INTO CakeOrder (order_id, customer_id, cake_id, option_id, order_date, to
 ('PM010', 'OR023', 'cash', '2024-05-24', 25000);
 
 ## 실행
+F5
+실패한다면
 .\gradlew build
 cd .\build\classes\java\main\
 java cakeapp.Main
